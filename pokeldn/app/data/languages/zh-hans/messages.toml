@@ -67,6 +67,7 @@
 "Switch prod.keys (live); default: keys_path from config/host*.toml" = "Switch 的 prod.keys（实时）；默认：取自 config/host*.toml 的 keys_path"
 "THE CONTROL. Ack a sequence id the console never sent: a rebroadcast that carries on under --seq-delta 1 is what attributes a stop under 0 to the ack's CONTENT rather than to our merely having transmitted" = "对照组。确认一个游戏机从未发送过的序列 id：在 --seq-delta 1 下仍能继续的重新广播，正是把 0 以下的停止归因于 ack 的内容、而非仅归因于我方发送过内容的关键"
 "Tera Type, 0 Normal to 17 Fairy in type order (default %(default)s)" = "太晶属性，按属性顺序从 0 一般 到 17 妖精（默认 %(default)s）"
+"This firmware uses a different radio protocol. Update it on the Board page." = "本固件使用了不同的无线电协议。请在「开发板」页面更新它。"
 "Union Room battle with --battle-fight: which of the active Pokemon's four move slots to use. The default 0 is whatever move slot one holds, which for the tracked party is refresh and does no damage" = "配合 --battle-fight 的联盟房间对战：使用出战宝可梦四个招式栏位中的哪一个。默认值 0 即第一个招式栏位，对受追踪的队伍而言是 Refresh，不造成伤害"
 "Union Room battle: pick fight with the first move instead of forfeiting at the first action prompt. Only the forfeit path has been proven on hardware" = "联盟房间对战：在第一个行动提示处选择用第一个招式战斗，而不是认输。目前只有认输路径在实机上验证过"
 "Union Room chat: a line to send once the chat opens, repeatable. Up to 15 Gen-3 charmap characters each, the console's own keyboard limit and the width its chat line can draw; they go out one at a time, 1.5s apart" = "联盟房间聊天：聊天开启后要发送的一行，可重复。每行最多 15 个第三世代字符映射表中的字符，即游戏机自身键盘的限制及其聊天行可绘制的宽度；它们逐条发出，间隔 1.5 秒"

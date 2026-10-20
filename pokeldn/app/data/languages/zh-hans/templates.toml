@@ -1,0 +1,11 @@
+# [app] 会话日志行（带占位符的那些）。app_log() 会把 "[app] " 前缀去掉再查表，所以键里不带前缀。
+# [app] session-log lines that carry a value; app_log() strips "[app] " before the lookup.
+"Could not open {device}: {error}" = "无法打开 {device}：{error}"
+"Could not read the chip type on {device} ({error})." = "无法读取 {device} 上的芯片类型（{error}）。"
+"Downloading {name} from {tag}." = "正在从 {tag} 下载 {name}。"
+"Firmware for {chip}: {path}" = "适用于 {chip} 的固件：{path}"
+"No pokeldn firmware answered on {device} ({error})." = "{device} 上没有 pokeldn 固件应答（{error}）。"
+"The chip on {device} is an {chip}." = "{device} 上的芯片是 {chip}。"
+"Waiting {seconds} s for the board's port to settle." = "正在等待 {seconds} 秒，以便开发板的端口稳定下来。"
+"{device} runs the controller firmware." = "{device} 运行的是控制器固件。"
+"{firmware}, protocol {protocol}, chip revision {revision}, MAC {mac}" = "固件 {firmware}，协议 {protocol}，芯片版本 {revision}，MAC {mac}"

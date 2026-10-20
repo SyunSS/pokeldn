@@ -330,6 +330,20 @@ def test_help_text_falls_back_to_english_for_a_sentence_the_pack_does_not_have()
     assert i18n.help_text("no-such-tool", "--nope", "a sentence nobody translated") == "a sentence nobody translated"
 
 
+def test_the_session_panel_translates_the_apps_own_log_lines():
+    """app_log() strips the "[app] " prefix and looks the rest up, so the pack's keys carry no prefix;
+    a tool's own output and the [done] lines stay English (docs/plugins.md)."""
+    from gui.localization import app_log
+    i18n.select("zh-hans")
+    assert app_log("[app] This firmware uses a different radio protocol. Update it on the Board page.") == \
+        "[app] 本固件使用了不同的无线电协议。请在「开发板」页面更新它。"
+    assert app_log("[app] Could not open /dev/ttyUSB0: busy") == "[app] 无法打开 /dev/ttyUSB0：busy"
+    assert app_log("[app] /dev/ttyUSB0 runs the controller firmware.") == "[app] /dev/ttyUSB0 运行的是控制器固件。"
+    # A tool's output and the completion line the console reads are never translated.
+    assert app_log("[done] trade 1 complete") == "[done] trade 1 complete"
+    assert app_log("some tool output in English") == "some tool output in English"
+
+
 def test_a_desktop_build_ships_the_language_pack():
     """scripts/pack_app.py copies every tracked file under `pokeldn/`, so the pack travels with the
     program; a file outside those folders would need its own --add-data line."""
