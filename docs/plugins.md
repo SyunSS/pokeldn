@@ -483,6 +483,16 @@ Install the pack on the Plugins page, then choose it in Settings, App language a
 Choosing a pack enables its plugin. English is always available. A missing, disabled or removed pack
 uses English. Trainer language still controls the Pokemon the app builds.
 
+### Built-in languages
+
+pokeldn ships English and Simplified Chinese (`pokeldn/app/data/languages/zh-hans`) as data-only
+packs, read by the same loader as an installed one. They need no installation, are always listed in
+Settings, App language, and are never turned off or removed; an installed pack with the same `id`
+replaces the shipped copy, so a community translation can take over. `pokeldn.app.i18n.bundled()`
+lists them and `language_packs()` merges them with the installed ones for the Settings choice. The
+framework needs no change to add another: drop a folder holding `plugin.toml` and `strings.toml`
+under `pokeldn/app/data/languages/`, and it appears in the list.
+
 Every lookup has an inline English default. Missing keys use that default; unused keys have no
 effect. Named placeholders such as `{value0}` can move within a translation. Keep their names,
 conversions and format specifications; `{{` and `}}` produce literal braces. A translation whose
@@ -491,8 +501,16 @@ placeholders cannot be formatted uses the English default for that lookup.
 ```bash
 python scripts/extract_strings.py
 python scripts/extract_strings.py --check
+python scripts/check_language_pack.py pokeldn/app/data/languages/zh-hans
+python scripts/check_language_pack.py --all
 python scripts/pack_plugin.py examples/plugins/pseudo -o pseudo.pokeplugin
 ```
+
+`check_language_pack.py` reads a pack the way the app does, then reports a key the English defaults
+have and the pack does not, a key the pack adds, a placeholder whose name, conversion or format
+specification changed, an entry left empty, and a value still identical to its English default
+(a warning, since some terms read the same in both languages). It exits non-zero on an error, so a
+release can run it before packing.
 
 The extractor writes `pokeldn/app/data/strings.en.toml`, sorted by key. Tests check that it matches
 the source and refuse a key with two English defaults. Keys remain unchanged when wording changes.

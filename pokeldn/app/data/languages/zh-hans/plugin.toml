@@ -1,0 +1,7 @@
+id = "zh-hans"
+name = "简体中文"
+version = "1.0.0"
+api = "1.5"
+locale = "zh-Hans"
+strings = "strings.toml"
+description = "简体中文界面，随 pokeldn 一起提供，无需安装。Included with pokeldn."

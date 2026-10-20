@@ -1,15 +1,21 @@
-"""Community language packs and English fallback; docs/plugins.md, Language packs."""
+"""Community language packs, the languages shipped with the app, and English fallback;
+docs/plugins.md, Language packs."""
 import os
 import re
 import string
 import tomllib
 from pathlib import Path, PurePosixPath
 
+# The packs shipped inside the program, beside the English defaults (docs/plugins.md, Built-in
+# languages). Each is a data-only language pack folder, read by the same loader as an installed one.
+LANGUAGES = Path(__file__).parent / "data" / "languages"
+
 _strings: dict[str, str] = {}
 _selected = ""
 _pack = None
 _terms_pattern = None
 _message_rules = []
+_bundled_cache: tuple = ((), [])
 
 
 def _basename(value):
@@ -110,8 +116,37 @@ def read_pack(meta: dict, read) -> dict[str, str]:
     return _table(meta.get("strings"), read, formatted=True)
 
 
+def bundled() -> list:
+    """The language packs shipped inside the program, sorted by folder; a broken one keeps its error.
+    Cached on the files' timestamps: Settings asks on every render, and editing a resource inside a
+    folder leaves the folder's own timestamp alone."""
+    global _bundled_cache
+    folders = sorted(p for p in LANGUAGES.iterdir() if not p.name.startswith(".") and (p / "plugin.toml").is_file()) \
+        if LANGUAGES.is_dir() else []
+    stamps = tuple((str(path), *((p.name, p.stat().st_mtime_ns) for p in sorted(path.iterdir()) if p.is_file()))
+                   for path in folders)
+    if _bundled_cache[0] != stamps:
+        from pokeldn import plugins
+        _bundled_cache = (stamps, [plugins._read_folder(path) for path in folders])
+    return list(_bundled_cache[1])
+
+
+def language_packs() -> list:
+    """The packs Settings can offer after English, one per id: an installed copy of a built-in
+    language comes first, then the languages shipped with the app."""
+    from pokeldn import plugins
+    found, seen = [], set()
+    for plugin in [*plugins.discover(), *bundled()]:
+        if plugin.locale and not plugin.error and plugin.id not in seen \
+                and plugins.compatibility(plugin.api)[0] in ("ok", "deprecated"):
+            seen.add(plugin.id)
+            found.append(plugin)
+    return found
+
+
 def select(plugin_id: str = "") -> None:
-    """Select an enabled language plugin by id; an absent or broken pack selects English."""
+    """Select a language by id: a named or enabled installed pack, else one shipped with the app.
+    An absent or broken pack selects English."""
     global _strings, _selected, _pack, _terms_pattern, _message_rules
     from pokeldn import plugins
     _selected = plugin_id
@@ -121,9 +156,12 @@ def select(plugin_id: str = "") -> None:
     _message_rules = []
     if plugin_id:
         on = plugins.enabled()
-        candidate = next((p for p in plugins.discover() if p.id == plugin_id and p.locale and not p.error
-                          and (plugins.named(p) or p.id in on)
-                          and plugins.compatibility(p.api)[0] in ("ok", "deprecated")), None)
+        installed = [p for p in plugins.discover() if p.id == plugin_id and p.locale and not p.error
+                     and (plugins.named(p) or p.id in on)
+                     and plugins.compatibility(p.api)[0] in ("ok", "deprecated")]
+        shipped = [p for p in bundled() if p.id == plugin_id and p.locale and not p.error
+                   and plugins.compatibility(p.api)[0] in ("ok", "deprecated")]
+        candidate = next(iter([*installed, *shipped]), None)
         if candidate is not None:
             _strings = candidate.translations
             _pack = candidate

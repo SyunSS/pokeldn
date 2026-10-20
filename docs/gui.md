@@ -88,10 +88,19 @@ The Control and Update pages are absent on Android and iOS.
 
 ## App language
 
-Settings, App language lists English and installed community language packs. Choosing a pack enables
-it; restart the app to apply the choice. Missing strings fall back to English. Trainer language
-controls built Pokemon separately. [Language packs](plugins.md#language-packs-15) describes the
-package format and translator template. The desktop app ships English defaults only. The bundled [Noto Sans CJK SC](https://github.com/notofonts/noto-cjk/tree/main/Sans/OTF/SimplifiedChinese) fallback font
+Settings, App language lists English, the languages pokeldn ships with, and any installed community
+language packs. pokeldn ships **简体中文 (Simplified Chinese)** beside English: choosing it needs no
+plugin and no download, and restarting the app shows the interface in Chinese. A community pack is
+turned on by choosing it, and an installed pack of a shipped language replaces the shipped copy.
+Missing strings fall back to English one lookup at a time, so a partly translated language still
+works. Nothing switches language on its own: a new profile starts in English until the player picks
+another. Trainer language controls built Pokemon separately, and file names, the session log, bank
+and GTS records stay English. [Language packs](plugins.md#language-packs-15) describes the package
+format, the translator template and the checker.
+
+Game text the app does not write itself follows the language too: PKHeX names species, moves, items,
+abilities, natures and balls in the pack's language and reports legality in it, and Flet's own
+dialogs and file pickers follow the locale. The bundled [Noto Sans CJK SC](https://github.com/notofonts/noto-cjk/tree/main/Sans/OTF/SimplifiedChinese) fallback font
 covers Chinese, Japanese and Korean text offline; its SIL Open Font License is in
 `gui/assets/fonts/LICENSE`.
 

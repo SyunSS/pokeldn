@@ -6,11 +6,12 @@ import flet as ft
 
 from gui import theme as t
 from gui.app import keys_found
-from pokeldn import __version__, pokemon, plugins
+from pokeldn import __version__, pokemon
 from pokeldn.app.paths import SESSION
 from pokeldn.app.sprites import CACHE
 from pokeldn.app.settings import switch_ids_valid
 from pokeldn.app import storage
+from pokeldn.app import i18n
 from gui.views.widgets import PathField, open_folder
 from pokeldn.app.i18n import t as tr
 
@@ -136,9 +137,10 @@ class SettingsView:
                          padding=ft.Padding(4, 12, 0, 0)),
             section(tr('settings.your_setup_d0e2ca', 'Your setup')),
             t.card(tr('settings.app_language_b8352b', 'App language'), t.dropdown(
-                [("", tr('settings.english_ba118b', 'English')), *((p.id, p.name) for p in plugins.discover() if p.locale and not p.error)],
+                [("", tr('settings.english_ba118b', 'English')),
+                 *((p.id, p.name) for p in i18n.language_packs())],
                 s.app_language, on_select=lambda e: self._language(e.control.value)),
-                tr('settings.community_language_packs_restart_pokeldn_to_apply_this__f11c09', 'Community language packs. Restart pokeldn to apply this choice.')),
+                tr('settings.community_language_packs_restart_pokeldn_to_apply_this__f11c09', 'English, the languages pokeldn ships with, and any community language packs you install. Restart pokeldn to apply this choice.')),
             t.card(tr('settings.switch_keys_f1b42d', 'Switch keys'), ft.Column([keys.control, self.keys_state], spacing=8),
                    tr('settings.prod_keys_dumped_from_your_own_console_needed_to_talk_t_26673c', 'prod.keys dumped from your own console. Needed to talk to the games; it never leaves this computer.')),
             t.card(tr('settings.your_trainer_d70afb', 'Your trainer'), trainer,
@@ -174,7 +176,10 @@ class SettingsView:
         ]
 
     def _language(self, plugin_id: str) -> None:
-        if plugin_id and plugin_id not in self.app.settings.plugins:
+        """A language ships with the app or arrives as a plugin: only the latter is turned on, and a
+        built-in language is never written into the plugin list (i18n.select reads both)."""
+        shipped = {p.id for p in i18n.bundled()}
+        if plugin_id and plugin_id not in shipped and plugin_id not in self.app.settings.plugins:
             self.save("plugins", [*self.app.settings.plugins, plugin_id])
         self.save("app_language", plugin_id)
 

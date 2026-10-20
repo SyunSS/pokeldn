@@ -102,3 +102,8 @@ EVAL_RUN_NOTES.txt
 /gui/client/
 # The ARM-only Unicorn scripts/build_unicorn.py builds, with its source.
 /gui/unicorn/
+
+# Workspace-local tooling: the test virtualenv and the translation batches the shipped language pack
+# was assembled from (the pack itself is committed under pokeldn/app/data/languages/).
+/.venv/
+/.i18n-work/

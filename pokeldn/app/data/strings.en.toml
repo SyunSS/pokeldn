@@ -1551,7 +1551,7 @@
 "settings.clear_local_files_5d39aa" = "Clear local files?"
 "settings.clear_the_cache_883bc1" = "Clear the cache"
 "settings.clearing_local_files_a2d4fd" = "Clearing local files..."
-"settings.community_language_packs_restart_pokeldn_to_apply_this__f11c09" = "Community language packs. Restart pokeldn to apply this choice."
+"settings.community_language_packs_restart_pokeldn_to_apply_this__f11c09" = "English, the languages pokeldn ships with, and any community language packs you install. Restart pokeldn to apply this choice."
 "settings.could_not_clear_local_files_7e6283" = "Could not clear local files: {value0}"
 "settings.discord_053bc6" = "Discord"
 "settings.documentation_c20592" = "Documentation"
