@@ -95,7 +95,9 @@ turned on by choosing it, and an installed pack of a shipped language replaces t
 Missing strings fall back to English one lookup at a time, so a partly translated language still
 works. The Options tab's Advanced section, and each drop-down's own values, are translated too: those
 come from the tools' command-line descriptions rather than the interface copy (plugins.md, Built-in
-languages). Nothing switches language on its own: a new profile starts in English until the player picks
+languages). The Docs page follows the language too: the shipped Chinese pack carries a page per
+`docs/*.md`, so the sidebar titles, the text, the search and the in-page links read Chinese, and one
+page the pack leaves out falls back to English on its own. Nothing switches language on its own: a new profile starts in English until the player picks
 another. Trainer language controls built Pokemon separately, and file names, the session log, bank
 and GTS records stay English. [Language packs](plugins.md#language-packs-15) describes the package
 format, the translator template and the checker.

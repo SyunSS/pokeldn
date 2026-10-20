@@ -502,6 +502,15 @@ rather than the visible parts. Protocol and mode identifiers (`save-dump`, `squa
 stay English in it: a translated key replaces every displayed string equal to it, so an identifier
 translated by mistake would also change a flag's own value.
 
+The Chinese pack also carries `documents = "docs"`: one Markdown page per `docs/*.md` file, so the
+Docs page, its search and every in-page link read Chinese, and a page the pack leaves out stays
+English. The pages keep the English page's headings in the same order, which is what keeps the
+fragment ids (`sv.md#tera-raids`) working, and their front-matter `title` renames the page in the
+sidebar while `parent` still names the English parent, because the tree itself is the English one.
+`scripts/import_translated_docs.py` builds the folder from a translated copy of the documentation
+site: it reads each page's `<main>`, converts the headings, paragraphs, lists, tables and code blocks
+back to Markdown, and restores the address of a link the offline copy kept as a local snapshot.
+
 Every lookup has an inline English default. Missing keys use that default; unused keys have no
 effect. Named placeholders such as `{value0}` can move within a translation. Keep their names,
 conversions and format specifications; `{{` and `}}` produce literal braces. A translation whose

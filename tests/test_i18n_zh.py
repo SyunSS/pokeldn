@@ -344,6 +344,75 @@ def test_the_session_panel_translates_the_apps_own_log_lines():
     assert app_log("some tool output in English") == "some tool output in English"
 
 
+# The docs the pack ships
+
+def test_the_pack_ships_a_page_per_english_page_it_translates():
+    """docs/plugins.md, Additional resources: a pack's `documents` folder holds a page per docs/*.md
+    file; a page the pack leaves out falls back to English, one file at a time."""
+    import tomllib
+    meta = tomllib.loads((PACK / "plugin.toml").read_text(encoding="utf-8"))
+    assert meta.get("documents") == "docs"
+    shipped = {p.stem for p in (PACK / "docs").glob("*.md")}
+    english = {p.stem for p in (Path(__file__).resolve().parents[1] / "docs").glob("*.md")}
+    assert shipped <= english, shipped - english
+    assert len(shipped) >= len(english) - 2, f"only {len(shipped)} of {len(english)} pages are translated"
+    assert "bdsp" in shipped and "sv_raid" in shipped
+
+
+def test_a_translated_page_keeps_the_english_heading_anchors():
+    """The reader keeps the English page's fragment ids when the translation has as many headings,
+    so a link such as sv.md#pikachu still lands (docs/plugins.md)."""
+    import re
+    root = Path(__file__).resolve().parents[1]
+    text = (PACK / "docs/sv_raid.md").read_text(encoding="utf-8")
+    english = (root / "docs/sv_raid.md").read_text(encoding="utf-8")
+
+    def headings(markdown):
+        found, fenced = [], False
+        for line in markdown.splitlines():
+            if line.lstrip().startswith("```"):
+                fenced = not fenced
+                continue
+            if not fenced and (match := re.match(r"^(#{1,6})\s+(.*)$", line)):
+                found.append(len(match.group(1)))
+        return found
+
+    assert headings(text) == headings(english), "the same headings, in the same order, keep the anchors"
+
+
+def test_the_docs_reader_opens_the_translated_page_and_falls_back_per_page(tmp_path, monkeypatch):
+    pytest.importorskip("flet")
+    from gui.views import docs
+    monkeypatch.setenv("POKELDN_DATA", str(tmp_path))
+    i18n.select("zh-hans")
+    page = docs.document_path("sv_raid.md")
+    assert PACK in page.parents and page.is_file()
+    body, reference = docs.document_body("sv_raid.md")
+    assert "太晶团体战" in body
+    assert reference and "Tera Raids" in reference, "the English page supplies the anchors"
+    # A page the pack does not carry stays English.
+    assert i18n.document("rse.md", "docs/rse.md") == Path("docs/rse.md")
+
+
+def test_the_import_script_rebuilds_the_pages_from_the_offline_site():
+    """scripts/import_translated_docs.py is how the shipped pages were made; it must still convert."""
+    import importlib.util
+    import sys
+    root = Path(__file__).resolve().parents[1]
+    path = root / "scripts" / "import_translated_docs.py"
+    spec = importlib.util.spec_from_file_location("import_translated_docs", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    html = ('<main><h1 id="a">标题</h1><p>正文 <code>x</code></p>'
+            '<ul><li>一项<pre><code>cmd --flag</code></pre></li></ul>'
+            '<table><tr><th>甲</th></tr><tr><td>乙</td></tr></table></main>')
+    markdown = module.convert(html)
+    assert "# 标题" in markdown and "`x`" in markdown
+    assert "cmd --flag" in markdown and "| 甲 |" in markdown
+    assert markdown.count("```") == 2
+
+
 def test_a_desktop_build_ships_the_language_pack():
     """scripts/pack_app.py copies every tracked file under `pokeldn/`, so the pack travels with the
     program; a file outside those folders would need its own --add-data line."""
