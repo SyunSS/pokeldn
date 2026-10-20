@@ -93,7 +93,9 @@ language packs. pokeldn ships **简体中文 (Simplified Chinese)** beside Engli
 plugin and no download, and restarting the app shows the interface in Chinese. A community pack is
 turned on by choosing it, and an installed pack of a shipped language replaces the shipped copy.
 Missing strings fall back to English one lookup at a time, so a partly translated language still
-works. Nothing switches language on its own: a new profile starts in English until the player picks
+works. The Options tab's Advanced section, and each drop-down's own values, are translated too: those
+come from the tools' command-line descriptions rather than the interface copy (plugins.md, Built-in
+languages). Nothing switches language on its own: a new profile starts in English until the player picks
 another. Trainer language controls built Pokemon separately, and file names, the session log, bank
 and GTS records stay English. [Language packs](plugins.md#language-packs-15) describes the package
 format, the translator template and the checker.

@@ -290,6 +290,46 @@ def test_pkhex_is_asked_for_simplified_chinese_names(monkeypatch):
 
 # Packaging
 
+# The Advanced options page
+
+def test_every_advanced_option_is_described_in_chinese():
+    """Games, Options, Advanced shows one paragraph per command-line flag. That text is argparse
+    `help=` in bin/*.py, looked up in the pack's `messages` table (i18n.help_text), not in
+    strings.toml: a missing sentence leaves the option English."""
+    from gui.views.games import flags_of
+    from pokeldn.app.catalog import GAMES
+    i18n.select("zh-hans")
+    leftover = []
+    total = 0
+    for game in GAMES:
+        for tool in game.tools:
+            for flag in flags_of(tool.script):
+                if not flag.help:
+                    continue
+                total += 1
+                if i18n.help_text(tool.key, flag.option, flag.help) == " ".join(flag.help.split()):
+                    leftover.append(f"{tool.key} {flag.option}")
+    assert total > 1800, f"the tools publish {total} described options"
+    assert not leftover, f"{len(leftover)} options still read English: {leftover[:5]}"
+
+
+def test_the_messages_table_keeps_the_protocol_identifiers_it_meets():
+    """A translated `messages` key is replaced wherever the whole displayed string equals it, so an
+    identifier translated by mistake would also change a flag's own value."""
+    import tomllib
+    messages = tomllib.loads((PACK / "messages.toml").read_text(encoding="utf-8"))
+    for identifier in ("save-dump", "memory-scan", "flash-write", "rng-trace", "table-scan",
+                       "create-mon", "call-chain", "sloop-svc", "BPRE", "3star", "sav1",
+                       "square", "line", "fixed", "move", "in-room", "raw", "ldn"):
+        assert messages.get(identifier, identifier) == identifier, identifier
+
+
+def test_help_text_falls_back_to_english_for_a_sentence_the_pack_does_not_have():
+    i18n.select("zh-hans")
+    assert i18n.help_text("frlg-trade-host", "--out", "received-mon output path") != "received-mon output path"
+    assert i18n.help_text("no-such-tool", "--nope", "a sentence nobody translated") == "a sentence nobody translated"
+
+
 def test_a_desktop_build_ships_the_language_pack():
     """scripts/pack_app.py copies every tracked file under `pokeldn/`, so the pack travels with the
     program; a file outside those folders would need its own --add-data line."""

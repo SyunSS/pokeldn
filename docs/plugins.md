@@ -493,6 +493,15 @@ lists them and `language_packs()` merges them with the installed ones for the Se
 framework needs no change to add another: drop a folder holding `plugin.toml` and `strings.toml`
 under `pokeldn/app/data/languages/`, and it appears in the list.
 
+The shipped Chinese pack is at API 1.9 because it also carries `messages.toml`. That table translates
+the text the app does not write itself and looks up literally: the Advanced options page describes
+every command-line flag with that flag's argparse `help=` sentence, and a dropdown's values are shown
+as they are written (`i18n.help_text` and `gui.localization.translate`). A sentence missing from
+`messages.toml` shows English for that one option, which is why the pack translates the whole table
+rather than the visible parts. Protocol and mode identifiers (`save-dump`, `square`, `BPRE`, `3star`)
+stay English in it: a translated key replaces every displayed string equal to it, so an identifier
+translated by mistake would also change a flag's own value.
+
 Every lookup has an inline English default. Missing keys use that default; unused keys have no
 effect. Named placeholders such as `{value0}` can move within a translation. Keep their names,
 conversions and format specifications; `{{` and `}}` produce literal braces. A translation whose
